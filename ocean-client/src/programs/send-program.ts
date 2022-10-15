@@ -1,5 +1,3 @@
-import { CTransaction } from '@defichain/jellyfish-transaction/dist'
-import { AddressToken } from '@defichain/whale-api-client/dist/api/address'
 import { BigNumber } from '@defichain/jellyfish-api-core'
 import { IStore } from '../utils/store'
 import { Telegram } from '../utils/telegram'
