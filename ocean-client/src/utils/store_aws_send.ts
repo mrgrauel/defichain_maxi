@@ -35,10 +35,8 @@ export class StoreAWSSend implements IStore {
     let seedkey = process.env.DEFICHAIN_SEED_KEY ?? StoreKey.DeFiWalletSeed
 
     let DeFiFromAddressKey = StoreKey.DeFiFromAddress.replace('-maxi', '-maxi' + storePostfix)
-    let SendThreshold = StoreKey.SendThreshold.replace('-maxi', '-maxi' + storePostfix)
-
     let DeFiToAddressKey = StoreKey.DeFiToAddress.replace('-maxi', '-maxi' + storePostfix)
-    let StateKey = StoreKey.State.replace('-maxi', '-maxi' + storePostfix)
+    let SendThreshold = StoreKey.SendThreshold.replace('-maxi', '-maxi' + storePostfix)
 
     //store only allows to get 10 parameters per request
     let parameters =
@@ -53,7 +51,6 @@ export class StoreAWSSend implements IStore {
               DeFiFromAddressKey,
               DeFiToAddressKey,
               SendThreshold,
-              StateKey,
             ],
           })
           .promise()
@@ -106,6 +103,4 @@ enum StoreKey {
   DeFiToAddress = '/defichain-maxi/wallet-send/toAddress',
 
   SendThreshold = '/defichain-maxi/settings-send/threshold',
-
-  State = '/defichain-maxi/state-send',
 }
