@@ -66,7 +66,7 @@ export class StoreAWSSend implements IStore {
     this.settings.logToken = this.getValue(StoreKey.TelegramLogsToken, parameters)
     this.settings.address = this.getValue(DeFiFromAddressKey, parameters)
     this.settings.toAddress = this.getValue(DeFiToAddressKey, parameters)
-    this.settings.reinvestThreshold = this.getNumberValue(SendThreshold, parameters)
+    this.settings.sendThreshold = this.getNumberValue(SendThreshold, parameters)
 
     let seedList = decryptedSeed?.Parameter?.Value?.replace(/[ ,]+/g, ' ')
     this.settings.seed = seedList?.trim().split(' ') ?? []
