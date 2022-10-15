@@ -41,8 +41,6 @@ export class SendProgramm extends CommonProgram {
     if (!this.settings.toAddress) {
       return false
     }
-    let txsToSign: CTransaction[] = []
-
     const utxoBalance = await this.getUTXOBalance()
     console.log('utxo: ' + utxoBalance)
     const balances = await this.getTokenBalances()
