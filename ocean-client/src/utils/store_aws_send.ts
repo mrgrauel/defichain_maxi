@@ -11,16 +11,8 @@ export class StoreAWSSend implements IStore {
     this.ssm = new SSM()
     this.settings = new StoredSettings()
   }
-
-  async updateToState(information: ProgramStateInformation): Promise<void> {
-    const key = StoreKey.State.replace('-maxi', '-maxi' + this.settings.paramPostFix)
-    const state = {
-      Name: key,
-      Value: ProgramStateConverter.toValue(information),
-      Overwrite: true,
-      Type: 'String',
-    }
-    await this.ssm.putParameter(state).promise()
+  updateToState(information: ProgramStateInformation): Promise<void> {
+    throw new Error('Method not implemented.')
   }
 
   async skipNext(): Promise<void> {}
@@ -75,7 +67,6 @@ export class StoreAWSSend implements IStore {
     this.settings.address = this.getValue(DeFiFromAddressKey, parameters)
     this.settings.toAddress = this.getValue(DeFiToAddressKey, parameters)
     this.settings.reinvestThreshold = this.getNumberValue(SendThreshold, parameters)
-    this.settings.stateInformation = ProgramStateConverter.fromValue(this.getValue(StateKey, parameters))
 
     let seedList = decryptedSeed?.Parameter?.Value?.replace(/[ ,]+/g, ' ')
     this.settings.seed = seedList?.trim().split(' ') ?? []
