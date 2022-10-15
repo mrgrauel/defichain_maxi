@@ -50,6 +50,10 @@ export class SendProgramm extends CommonProgram {
     const amountFromBalance = new BigNumber(tokenBalance?.amount ?? '0')
     const fromUtxos = utxoBalance.gt(1) ? utxoBalance.minus(1) : new BigNumber(0)
     let amountToUse = fromUtxos.plus(amountFromBalance)
+
+    if (amountToUse.toNumber() < this.threshold) {
+      return true
+    }
     const tx = await this.sendDFIToAccount(amountToUse, this.toAddress)
     txsToSign.push(tx)
 
