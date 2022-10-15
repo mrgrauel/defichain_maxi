@@ -44,22 +44,27 @@ export class SendProgramm extends CommonProgram {
     let txsToSign: CTransaction[] = []
 
     const utxoBalance = await this.getUTXOBalance()
+    console.log('utxo: ' + utxoBalance)
     const balances = await this.getTokenBalances()
     const tokenBalance = balances.get('DFI')
+    console.log('dfi: ' + tokenBalance)
 
     const amountFromBalance = new BigNumber(tokenBalance?.amount ?? '0')
     const fromUtxos = utxoBalance.gt(1) ? utxoBalance.minus(1) : new BigNumber(0)
     let amountToUse = fromUtxos.plus(amountFromBalance)
+    console.log('amountToUse: ' + amountToUse)
 
     if (amountToUse.toNumber() < this.threshold) {
+      console.log('Treshold not reached')
       return true
     }
+
+    console.log('send ' + amountToUse.toFixed(4) + '@DFI' + ' to: ' + this.toAddress)
     const tx = await this.sendDFIToAccount(amountToUse, this.toAddress)
-    txsToSign.push(tx)
 
     if (!this.canSign()) {
-      await this.sendTxDataToTelegram(txsToSign, telegram)
-      txsToSign = []
+      await this.sendTxDataToTelegram([tx], telegram)
+      return false
     }
 
     if (!(await this.waitForTx(tx.txId))) {
