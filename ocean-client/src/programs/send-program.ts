@@ -44,10 +44,10 @@ export class SendProgramm extends CommonProgram {
     const utxoBalance = await this.getUTXOBalance()
     console.log('utxo: ' + utxoBalance)
     const balances = await this.getTokenBalances()
-    const tokenBalance = balances.get('DFI')
-    console.log('dfi: ' + tokenBalance)
+    const dfiBalance = balances.get('DFI')?.amount ?? '0'
+    console.log('dfi: ' + dfiBalance)
 
-    const amountFromBalance = new BigNumber(tokenBalance?.amount ?? '0')
+    const amountFromBalance = new BigNumber(dfiBalance)
     const fromUtxos = utxoBalance.gt(1) ? utxoBalance.minus(1) : new BigNumber(0)
     let amountToUse = fromUtxos.plus(amountFromBalance)
     console.log('amountToUse: ' + amountToUse)
