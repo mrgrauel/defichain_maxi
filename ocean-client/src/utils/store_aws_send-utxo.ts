@@ -3,7 +3,7 @@ import { ProgramStateConverter, ProgramStateInformation } from './program-state-
 import { IStore, StoredSettings } from './store'
 
 // handle AWS Paramter
-export class StoreAWSSend implements IStore {
+export class StoreAWSSendUTXO implements IStore {
   private ssm: SSM
   readonly settings: StoredSettings
 

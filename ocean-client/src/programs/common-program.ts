@@ -260,20 +260,6 @@ export class CommonProgram {
     )
   }
 
-  async convertDFItoUTXO(amount: BigNumber, prevout: Prevout | undefined = undefined): Promise<CTransaction> {
-    const accountToUTxos: AccountToUtxos = {
-      from: this.script!,
-      balances: [
-        {
-          token: 0,
-          amount: amount,
-        },
-      ],
-      mintingOutputsStart: 2,
-    }
-    return this.sendOrCreateDefiTx(OP_CODES.OP_DEFI_TX_ACCOUNT_TO_UTXOS(accountToUTxos), prevout, amount)
-  }
-
   async sendUTXOToAccount(
     amount: BigNumber,
     address: string,

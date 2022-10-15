@@ -1,10 +1,8 @@
 import { BigNumber } from '@defichain/jellyfish-api-core'
-import { CTransaction } from '@defichain/jellyfish-transaction/dist'
 import { IStore } from '../utils/store'
 import { Telegram } from '../utils/telegram'
 import { WalletSetup } from '../utils/wallet-setup'
 import { CommonProgram } from './common-program'
-import { Prevout } from '@defichain/jellyfish-transaction-builder'
 
 export class SendProgramm extends CommonProgram {
   readonly toAddress: string
@@ -43,13 +41,8 @@ export class SendProgramm extends CommonProgram {
     }
     const utxoBalance = await this.getUTXOBalance()
     console.log('utxo: ' + utxoBalance)
-    const balances = await this.getTokenBalances()
-    const dfiBalance = balances.get('DFI')?.amount ?? '0'
-    console.log('dfi: ' + dfiBalance)
 
-    const amountFromBalance = new BigNumber(dfiBalance)
-    const fromUtxos = utxoBalance.gt(1) ? utxoBalance.minus(1) : new BigNumber(0)
-    let amountToUse = fromUtxos.plus(amountFromBalance)
+    const amountToUse = utxoBalance.gt(1) ? utxoBalance.minus(1) : new BigNumber(0)
     console.log('amountToUse: ' + amountToUse)
 
     if (amountToUse.toNumber() < this.threshold) {
@@ -57,19 +50,8 @@ export class SendProgramm extends CommonProgram {
       return true
     }
 
-    let txsToSign: CTransaction[] = []
-    let prevout: Prevout | undefined = undefined
-
-    if (amountFromBalance.toNumber() > 0) {
-      console.log('convert ' + amountFromBalance.toFixed(4) + '@DFI' + ' to: UTXO')
-      const utxoTx = await this.convertDFItoUTXO(amountFromBalance)
-      txsToSign.push(utxoTx)
-      prevout = this.prevOutFromTx(utxoTx)
-    }
-
     console.log('send ' + amountToUse.toFixed(4) + '@UTXO' + ' to: ' + this.toAddress)
-    const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress, prevout)
-    txsToSign.push(sendTx)
+    const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress)
 
     if (!(await this.waitForTx(sendTx.txId))) {
       await telegram.send('ERROR: sending of DFI failed')

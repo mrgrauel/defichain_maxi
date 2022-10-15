@@ -1,5 +1,5 @@
-import { SendProgramm } from './programs/send-program'
-import { StoreAWSSend } from './utils/store_aws_send'
+import { SendProgramm } from './programs/send-utxo-program'
+import { StoreAWSSendUTXO } from './utils/store_aws_send-utxo'
 import { Telegram } from './utils/telegram'
 import { WalletSetup } from './utils/wallet-setup'
 class maxiEvent {
@@ -15,14 +15,14 @@ export async function main(event: maxiEvent, context: any): Promise<Object> {
 
   while (context.getRemainingTimeInMillis() >= MIN_TIME_PER_ACTION_MS) {
     console.log('starting with ' + context.getRemainingTimeInMillis() + 'ms available')
-    let store = new StoreAWSSend()
+    let store = new StoreAWSSendUTXO()
     let settings = await store.fetchSettings()
 
     if (event) {
       console.log('received event ' + JSON.stringify(event))
     }
     const logId = process.env.VAULTMAXI_LOGID ? ' ' + process.env.VAULTMAXI_LOGID : ''
-    const telegram = new Telegram(settings, '[Send' + settings.paramPostFix + ' ' + VERSION + logId + ']')
+    const telegram = new Telegram(settings, '[SEND-UTXO' + settings.paramPostFix + ' ' + VERSION + logId + ']')
 
     try {
       const program = new SendProgramm(store, new WalletSetup(settings, ocean))
