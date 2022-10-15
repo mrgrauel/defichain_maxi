@@ -1,7 +1,6 @@
 import { BigNumber } from '@defichain/jellyfish-api-core'
 import {
   AccountToAccount,
-  AccountToUtxos,
   CAccountToAccount,
   CTransaction,
   CTransactionSegWit,
@@ -24,7 +23,6 @@ import {
   LoanToken,
   LoanVaultActive,
   LoanVaultLiquidated,
-  LoanVaultTokenAmount,
 } from '@defichain/whale-api-client/dist/api/loan'
 import { PoolPairData } from '@defichain/whale-api-client/dist/api/poolpairs'
 import { ActivePrice } from '@defichain/whale-api-client/dist/api/prices'
