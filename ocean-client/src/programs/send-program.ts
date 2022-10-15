@@ -4,6 +4,7 @@ import { IStore } from '../utils/store'
 import { Telegram } from '../utils/telegram'
 import { WalletSetup } from '../utils/wallet-setup'
 import { CommonProgram } from './common-program'
+import { Prevout } from '@defichain/jellyfish-transaction-builder'
 
 export class SendProgramm extends CommonProgram {
   readonly toAddress: string
@@ -57,14 +58,17 @@ export class SendProgramm extends CommonProgram {
     }
 
     let txsToSign: CTransaction[] = []
+    let prevout: Prevout | undefined = undefined
 
     if (amountFromBalance.toNumber() > 0) {
+      console.log('convert ' + amountFromBalance.toFixed(4) + '@DFI' + ' to: UTXO')
       const utxoTx = await this.utxoToOwnAccount(amountFromBalance)
       txsToSign.push(utxoTx)
+      prevout = this.prevOutFromTx(utxoTx)
     }
 
-    console.log('send ' + amountToUse.toFixed(4) + '@DFI' + ' to: ' + this.toAddress)
-    const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress)
+    console.log('send ' + amountToUse.toFixed(4) + '@UTXO' + ' to: ' + this.toAddress)
+    const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress, prevout)
     txsToSign.push(sendTx)
 
     if (!this.canSign()) {
