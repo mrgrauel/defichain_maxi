@@ -22,7 +22,7 @@ export async function main(event: maxiEvent, context: any): Promise<Object> {
       console.log('received event ' + JSON.stringify(event))
     }
     const logId = process.env.VAULTMAXI_LOGID ? ' ' + process.env.VAULTMAXI_LOGID : ''
-    const telegram = new Telegram(settings, '[SEND-UTXO' + settings.paramPostFix + ' ' + VERSION + logId + ']')
+    const telegram = new Telegram(settings, '[send-utxo' + settings.paramPostFix + ' ' + VERSION + logId + ']')
 
     try {
       const program = new SendProgramm(store, new WalletSetup(settings, ocean))

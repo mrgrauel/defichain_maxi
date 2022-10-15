@@ -1,9 +1,8 @@
-import { BigNumber } from '@defichain/jellyfish-api-core'
 import { IStore } from '../utils/store'
 import { Telegram } from '../utils/telegram'
 import { WalletSetup } from '../utils/wallet-setup'
 import { CommonProgram } from './common-program'
-import { fromAddress, fromScript } from '@defichain/jellyfish-address'
+import { fromAddress } from '@defichain/jellyfish-address'
 
 export class SendProgramm extends CommonProgram {
   readonly toAddress: string
@@ -52,9 +51,8 @@ export class SendProgramm extends CommonProgram {
       return false
     }
 
-    await telegram.send('send ' + utxoBalance.toFixed(4) + '@DFI' + ' to: ' + this.toAddress)
+    await telegram.send('send ' + utxoBalance.toFixed(4) + '@DFI' + ' to ' + this.toAddress)
 
     return true
   }
 }
-
