@@ -34,8 +34,7 @@ export async function main(event: maxiEvent, context: any): Promise<Object> {
           return { statusCode: result ? 200 : 500 }
         }
       }
-      let balances = await program.getTokenBalances()
-      await program.doSend(balances, telegram)
+      await program.doSend(telegram)
       return { statusCode: 200 }
     } catch {
       return { statusCode: 500 }

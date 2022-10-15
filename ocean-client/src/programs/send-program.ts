@@ -37,12 +37,14 @@ export class SendProgramm extends CommonProgram {
     return true
   }
 
-  async doSend(balances: Map<String, AddressToken>, telegram: Telegram): Promise<boolean> {
+  async doSend(telegram: Telegram): Promise<boolean> {
     if (!this.settings.toAddress) {
       return false
     }
     let txsToSign: CTransaction[] = []
+
     const utxoBalance = await this.getUTXOBalance()
+    const balances = await this.getTokenBalances()
     const tokenBalance = balances.get('DFI')
 
     const amountFromBalance = new BigNumber(tokenBalance?.amount ?? '0')
