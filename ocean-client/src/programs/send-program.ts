@@ -62,7 +62,7 @@ export class SendProgramm extends CommonProgram {
 
     if (amountFromBalance.toNumber() > 0) {
       console.log('convert ' + amountFromBalance.toFixed(4) + '@DFI' + ' to: UTXO')
-      const utxoTx = await this.utxoToOwnAccount(amountFromBalance)
+      const utxoTx = await this.convertDFItoUTXO(amountFromBalance)
       txsToSign.push(utxoTx)
       prevout = this.prevOutFromTx(utxoTx)
     }
