@@ -37,7 +37,9 @@ export async function main(event: maxiEvent, context: any): Promise<Object> {
       await program.doSend(telegram)
       return { statusCode: 200 }
     } catch {
+      telegram.send('Unexpected error')
       return { statusCode: 500 }
     }
   }
+  return { statusCode: 500 }
 }
