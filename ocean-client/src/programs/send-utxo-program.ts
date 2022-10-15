@@ -3,6 +3,7 @@ import { IStore } from '../utils/store'
 import { Telegram } from '../utils/telegram'
 import { WalletSetup } from '../utils/wallet-setup'
 import { CommonProgram } from './common-program'
+import { fromAddress, fromScript } from '@defichain/jellyfish-address'
 
 export class SendProgramm extends CommonProgram {
   readonly toAddress: string
@@ -19,19 +20,6 @@ export class SendProgramm extends CommonProgram {
       return false
     }
 
-    const utxoBalance = await this.getUTXOBalance()
-    if (utxoBalance.lte(1e-4)) {
-      //1 tx is roughly 2e-6 fee, one action mainly 3 tx -> 6e-6 fee. we want at least 10 actions safety -> below 1e-4 we warn
-      const message =
-        'your UTXO balance is running low in ' +
-        this.settings.address +
-        ', only ' +
-        utxoBalance.toFixed(5) +
-        ' DFI left. Please replenish to prevent any errors'
-      await telegram.send(message)
-      console.warn(message)
-    }
-
     return true
   }
 
@@ -42,25 +30,31 @@ export class SendProgramm extends CommonProgram {
     const utxoBalance = await this.getUTXOBalance()
     console.log('utxo: ' + utxoBalance)
 
-    const amountToUse = utxoBalance.gt(1) ? utxoBalance.minus(1) : new BigNumber(0)
-    console.log('amountToUse: ' + amountToUse)
-
-    if (amountToUse.toNumber() < this.threshold) {
+    if (utxoBalance.toNumber() < this.threshold) {
       console.log('Treshold not reached')
       return true
     }
 
-    console.log('send ' + amountToUse.toFixed(4) + '@UTXO' + ' to: ' + this.toAddress)
-    const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress)
+    const account = await this.walletSetup.getAccount(this.getAddress())
+    const toScript = fromAddress(this.toAddress, this.walletSetup.network.name)!.script
+    const txn = await account?.withTransactionBuilder()?.utxo.sendAll(toScript)
 
-    if (!(await this.waitForTx(sendTx.txId))) {
+    if (txn === undefined) {
+      await telegram.send('ERROR: transactionSegWit is undefined')
+      console.error('transactionSegWit is undefinedd')
+      return false
+    }
+
+    const tx = await this.send(txn)
+    if (!(await this.waitForTx(tx.txId))) {
       await telegram.send('ERROR: sending of DFI failed')
       console.error('sending DFI failed')
       return false
     }
 
-    await telegram.send('send ' + amountToUse.toFixed(4) + '@DFI' + ' to: ' + this.toAddress)
+    await telegram.send('send ' + utxoBalance.toFixed(4) + '@DFI' + ' to: ' + this.toAddress)
 
     return true
   }
 }
+

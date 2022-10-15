@@ -260,24 +260,6 @@ export class CommonProgram {
     )
   }
 
-  async sendUTXOToAccount(
-    amount: BigNumber,
-    address: string,
-    prevout: Prevout | undefined = undefined,
-  ): Promise<CTransaction> {
-    return this.sendOrCreateDefiTx(
-      OP_CODES.OP_DEFI_TX_UTXOS_TO_ACCOUNT({
-        to: [
-          {
-            script: fromAddress(address, this.walletSetup.network.name)!.script,
-            balances: [{ token: 0, amount: amount }],
-          },
-        ],
-      }),
-      prevout,
-    )
-  }
-
   async sendDFIToAccount(
     amount: BigNumber,
     address: string,
