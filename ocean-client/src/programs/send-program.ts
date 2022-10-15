@@ -71,11 +71,6 @@ export class SendProgramm extends CommonProgram {
     const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress, prevout)
     txsToSign.push(sendTx)
 
-    if (!this.canSign()) {
-      await this.sendTxDataToTelegram(txsToSign, telegram)
-      return false
-    }
-
     if (!(await this.waitForTx(sendTx.txId))) {
       await telegram.send('ERROR: sending of DFI failed')
       console.error('sending DFI failed')
