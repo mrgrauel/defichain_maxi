@@ -1,4 +1,5 @@
 import { BigNumber } from '@defichain/jellyfish-api-core'
+import { CTransaction } from '@defichain/jellyfish-transaction/dist'
 import { IStore } from '../utils/store'
 import { Telegram } from '../utils/telegram'
 import { WalletSetup } from '../utils/wallet-setup'
@@ -55,15 +56,23 @@ export class SendProgramm extends CommonProgram {
       return true
     }
 
+    let txsToSign: CTransaction[] = []
+
+    if (amountFromBalance.toNumber() > 0) {
+      const utxoTx = await this.utxoToOwnAccount(amountFromBalance)
+      txsToSign.push(utxoTx)
+    }
+
     console.log('send ' + amountToUse.toFixed(4) + '@DFI' + ' to: ' + this.toAddress)
-    const tx = await this.sendDFIToAccount(amountToUse, this.toAddress)
+    const sendTx = await this.sendUTXOToAccount(amountToUse, this.toAddress)
+    txsToSign.push(sendTx)
 
     if (!this.canSign()) {
-      await this.sendTxDataToTelegram([tx], telegram)
+      await this.sendTxDataToTelegram(txsToSign, telegram)
       return false
     }
 
-    if (!(await this.waitForTx(tx.txId))) {
+    if (!(await this.waitForTx(sendTx.txId))) {
       await telegram.send('ERROR: sending of DFI failed')
       console.error('sending DFI failed')
       return false
